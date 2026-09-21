@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* A soft backdrop wash for headers, in the moodboard's own palette —
+   terracotta warmth, sage, and powder blue, standing in for a literal
+   illustration without competing with the header text on top of it. */
+.bloom-backdrop {
+  background:
+    radial-gradient(circle at 12% 15%, rgba(201, 123, 92, 0.14), transparent 55%),
+    radial-gradient(circle at 88% 10%, rgba(124, 156, 134, 0.18), transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(190, 217, 236, 0.45), transparent 60%);
+}
+
+/* A faint, warm paper grain so large cream fields (page background, sheet
+   backgrounds) read as linen/parchment rather than flat digital color.
+   Kept extremely subtle — this is texture, not decoration. */
+.paper-grain {
+  background-image: radial-gradient(rgba(35, 64, 47, 0.035) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+
+/* Bottom view-switcher bar sits above the iOS home indicator / gesture
+   area on notched phones. */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
