@@ -39,26 +39,41 @@ export function UpcomingCard({
   showDate?: boolean;
 }) {
   const p = playdate;
+  const badge = BADGE_LABEL[p.status] && (
+    <span className="shrink-0 rounded-full bg-white px-2.5 py-0.5 text-[10px] font-bold text-ink/70">
+      {BADGE_LABEL[p.status]}
+    </span>
+  );
+
   return (
     <button
       onClick={() => onSelect(p)}
       className={`w-full text-left rounded-card px-4 py-3 transition-transform active:scale-[0.98] ${CARD_FILL[p.status]}`}
     >
-      <div className="flex items-start justify-between gap-2">
-        {showDate ? (
-          <p className={`text-[11px] font-bold uppercase tracking-wide ${CARD_TEXT[p.status]} opacity-70`}>
-            {shortDateLabel(p.date)}
+      {/* Peek/collapsed cards carry their own date label up top (there's no
+          section subheader above them), so the badge sits inline with it.
+          Expanded/grouped cards already sit under a date subheader, so the
+          badge instead sits inline with the title — pairing it with an
+          empty top row there looked orphaned. */}
+      {showDate ? (
+        <>
+          <div className="flex items-start justify-between gap-2">
+            <p className={`text-[11px] font-bold uppercase tracking-wide ${CARD_TEXT[p.status]} opacity-70`}>
+              {shortDateLabel(p.date)}
+            </p>
+            {badge}
+          </div>
+          <p className={`font-serif font-semibold text-lg leading-snug mt-0.5 ${CARD_TEXT[p.status]}`}>
+            {p.title}
           </p>
-        ) : (
-          <span />
-        )}
-        {BADGE_LABEL[p.status] && (
-          <span className="shrink-0 rounded-full bg-white px-2.5 py-0.5 text-[10px] font-bold text-ink/70">
-            {BADGE_LABEL[p.status]}
-          </span>
-        )}
-      </div>
-      <p className={`font-serif font-semibold text-lg leading-snug mt-0.5 ${CARD_TEXT[p.status]}`}>{p.title}</p>
+        </>
+      ) : (
+        <div className="flex items-start justify-between gap-2">
+          <p className={`font-serif font-semibold text-lg leading-snug ${CARD_TEXT[p.status]}`}>{p.title}</p>
+          {badge}
+        </div>
+      )}
+
       <p className={`text-[13px] font-medium mt-1 ${CARD_TEXT[p.status]} opacity-80`}>
         {formatDuration(p.start_time, p.end_time)}
         {p.location_name ? ` · ${p.location_name}` : ""}

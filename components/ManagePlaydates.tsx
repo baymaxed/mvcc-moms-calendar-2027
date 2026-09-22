@@ -239,9 +239,9 @@ function MoveForm({
         the new one.
       </p>
       <div className="grid grid-cols-3 gap-2">
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} min="2027-01-01" max="2027-05-31" className="rounded-xl border-2 border-sky/60 px-2 py-2 text-sm font-medium" />
-        <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="rounded-xl border-2 border-sky/60 px-2 py-2 text-sm font-medium" />
-        <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="rounded-xl border-2 border-sky/60 px-2 py-2 text-sm font-medium" />
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="rounded-xl border-2 border-sky/60 px-2 py-2 text-sm font-medium" />
+        <input type="time" step="900" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="rounded-xl border-2 border-sky/60 px-2 py-2 text-sm font-medium" />
+        <input type="time" step="900" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="rounded-xl border-2 border-sky/60 px-2 py-2 text-sm font-medium" />
       </div>
       <input
         value={note}

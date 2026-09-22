@@ -26,6 +26,10 @@ const config: Config = {
         // generic green/amber/red traffic light
         confirmed: "#3F6B7A",
         confirmedtint: "#DCEBF3",
+        // A punchier version of "confirmed" used only for the calendar's
+        // date-dot, which needs to read clearly on the dark grid — the
+        // softer teal above stays for badges/cards on light backgrounds
+        confirmedvivid: "#1789B3",
         moved: "#8A5F13",
         movedtint: "#F8E2B0",
         cancelled: "#A14A3D",

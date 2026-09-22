@@ -8,7 +8,7 @@ import { dominantStatus } from "@/components/StatusBadge";
 // that can wrap or truncate — just a number, optionally sitting in a
 // colored circle. Tapping a date with playdates opens the soonest one.
 const DOT_FILL: Record<Playdate["status"], string> = {
-  active: "bg-confirmed text-white",
+  active: "bg-confirmedvivid text-white",
   moved: "bg-moved text-white",
   cancelled: "bg-cancelled text-white",
 };

@@ -1,36 +1,20 @@
-// The app only ever covers January–May 2027. This decides which month to
-// open to, per spec: before the season, default to January; during it,
-// default to the current month; after, default to May.
-
-export const SEASON_YEAR = 2027;
-export const SEASON_START_MONTH = 1; // January
-export const SEASON_END_MONTH = 5; // May
+// The calendar now runs indefinitely — no fixed season window. It always
+// opens to the current real-world month, and navigation is unrestricted in
+// both directions.
 
 export function getDefaultMonth(now: Date = new Date()): {
   year: number;
   month: number; // 1-12
 } {
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
-
-  const beforeSeason =
-    year < SEASON_YEAR ||
-    (year === SEASON_YEAR && month < SEASON_START_MONTH);
-  const afterSeason =
-    year > SEASON_YEAR ||
-    (year === SEASON_YEAR && month > SEASON_END_MONTH);
-
-  if (beforeSeason) return { year: SEASON_YEAR, month: SEASON_START_MONTH };
-  if (afterSeason) return { year: SEASON_YEAR, month: SEASON_END_MONTH };
-  return { year: SEASON_YEAR, month };
+  return { year: now.getFullYear(), month: now.getMonth() + 1 };
 }
 
-export function canGoPrev(year: number, month: number) {
-  return !(year === SEASON_YEAR && month <= SEASON_START_MONTH);
+export function canGoPrev(_year: number, _month: number) {
+  return true;
 }
 
-export function canGoNext(year: number, month: number) {
-  return !(year === SEASON_YEAR && month >= SEASON_END_MONTH);
+export function canGoNext(_year: number, _month: number) {
+  return true;
 }
 
 export function monthLabel(year: number, month: number) {
@@ -49,22 +33,8 @@ export function monthRange(year: number, month: number) {
   return { start: fmt(first), end: fmt(last) };
 }
 
-// The full season's bounds — used by List View to know how far forward to
-// query, independent of whatever month the grid happens to be showing.
-export function seasonBounds() {
-  return {
-    start: `${SEASON_YEAR}-01-01`,
-    end: `${SEASON_YEAR}-05-31`,
-  };
-}
-
-// Where List View's "upcoming" window should start: today, clamped into the
-// season. Before the season, that's day one of January; after it ends,
-// there's nothing left to show (the list will render its empty state).
+// Where the Upcoming sheet's chronological window starts: today, with no
+// end bound — it shows everything that's ever added, going forward.
 export function upcomingListStart(now: Date = new Date()): string {
-  const { start, end } = seasonBounds();
-  const todayStr = now.toISOString().slice(0, 10);
-  if (todayStr < start) return start;
-  if (todayStr > end) return end;
-  return todayStr;
+  return now.toISOString().slice(0, 10);
 }

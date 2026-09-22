@@ -40,7 +40,7 @@ npm install
 npm run dev
 ```
 
-Visit `http://localhost:3000` for the public calendar, `/admin` for the DGL
+Visit `http://localhost:3000` for the public calendar, `/dgl` for the DGL
 tools.
 
 ## 4. Deploy
@@ -90,7 +90,7 @@ working immediately.
   delete with before/after snapshots. It's not exposed in the DGL UI in V1
   — it's a backend safety net, queryable directly in the Supabase dashboard
   if something needs investigating.
-- **CSV backup**: `/admin` has a "Download full backup (CSV)" link that
+- **CSV backup**: `/dgl` has a "Download full backup (CSV)" link that
   exports every playdate (including soft-deleted ones) for manual backup.
 
 ## Default month logic

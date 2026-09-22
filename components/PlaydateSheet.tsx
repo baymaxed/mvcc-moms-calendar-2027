@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { Playdate } from "@/types/playdate";
 import { formatDateLong } from "@/lib/format";
-import { seasonBounds, upcomingListStart } from "@/lib/dateDefaults";
+import { upcomingListStart } from "@/lib/dateDefaults";
 import { AnchorMark } from "@/components/motifs/AnchorMark";
 import { UpcomingCard } from "@/components/UpcomingCard";
 
@@ -20,7 +20,13 @@ export function PlaydateSheet({ onSelect }: { onSelect: (p: Playdate) => void })
   const [dragPx, setDragPx] = useState<number | null>(null);
 
   const stageRef = useRef<HTMLDivElement | null>(null);
-  const dragState = useRef<{ startY: number; startTranslate: number } | null>(null);
+  const dragState = useRef<{
+    startY: number;
+    startTranslate: number;
+    lastY: number;
+    lastT: number;
+    velocity: number; // px/ms, positive = moving down
+  } | null>(null);
   const [stageHeight, setStageHeight] = useState(640);
 
   useLayoutEffect(() => {
@@ -38,12 +44,10 @@ export function PlaydateSheet({ onSelect }: { onSelect: (p: Playdate) => void })
     let cancelled = false;
     async function load() {
       const start = upcomingListStart();
-      const { end } = seasonBounds();
       const { data } = await supabase
         .from("playdates")
         .select("*")
         .gte("date", start)
-        .lte("date", end)
         .order("date", { ascending: true })
         .order("start_time", { ascending: true });
       if (cancelled) return;
@@ -85,26 +89,50 @@ export function PlaydateSheet({ onSelect }: { onSelect: (p: Playdate) => void })
     return expanded ? 0 : collapsedTranslate;
   }
 
-  function handlePointerDown(e: React.PointerEvent) {
+  function beginDrag(e: React.PointerEvent) {
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    dragState.current = { startY: e.clientY, startTranslate: restingTranslate() };
-    setDragPx(restingTranslate());
+    const start = restingTranslate();
+    const now = performance.now();
+    dragState.current = { startY: e.clientY, startTranslate: start, lastY: e.clientY, lastT: now, velocity: 0 };
+    setDragPx(start);
   }
 
-  function handlePointerMove(e: React.PointerEvent) {
+  function moveDrag(e: React.PointerEvent) {
     if (!dragState.current) return;
+    const now = performance.now();
+    const dt = now - dragState.current.lastT;
+    if (dt > 0) {
+      dragState.current.velocity = (e.clientY - dragState.current.lastY) / dt;
+    }
+    dragState.current.lastY = e.clientY;
+    dragState.current.lastT = now;
     const delta = e.clientY - dragState.current.startY;
     const next = Math.min(Math.max(dragState.current.startTranslate + delta, 0), collapsedTranslate);
     setDragPx(next);
   }
 
-  function handlePointerUp() {
-    if (dragPx !== null) {
-      setExpanded(dragPx < collapsedTranslate / 2);
+  // A fast flick snaps to the opposite state even if you didn't drag past
+  // the halfway point — that's what makes it feel like a real swipe rather
+  // than a slow, deliberate drag.
+  const FLICK_VELOCITY = 0.5;
+
+  function endDrag() {
+    if (dragPx !== null && dragState.current) {
+      const { velocity } = dragState.current;
+      if (velocity < -FLICK_VELOCITY) setExpanded(true);
+      else if (velocity > FLICK_VELOCITY) setExpanded(false);
+      else setExpanded(dragPx < collapsedTranslate / 2);
     }
     dragState.current = null;
     setDragPx(null);
   }
+
+  const dragHandlers = {
+    onPointerDown: beginDrag,
+    onPointerMove: moveDrag,
+    onPointerUp: endDrag,
+    onPointerCancel: endDrag,
+  };
 
   const translateY = dragPx !== null ? dragPx : restingTranslate();
   const isDragging = dragPx !== null;
@@ -122,10 +150,7 @@ export function PlaydateSheet({ onSelect }: { onSelect: (p: Playdate) => void })
       {/* Handle zone — the anchor straddles the seam and is both a drag
           handle and a tap-to-toggle control */}
       <div
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        {...dragHandlers}
         className="relative flex flex-col items-center pt-0 pb-2 cursor-grab active:cursor-grabbing touch-none"
       >
         <button
@@ -139,8 +164,14 @@ export function PlaydateSheet({ onSelect }: { onSelect: (p: Playdate) => void })
       </div>
 
       {/* Content: a short flat preview when collapsed, the full
-          chronological season grouped by month when expanded */}
-      <div className="overflow-y-auto px-4 pb-28" style={{ height: "calc(100% - 84px)" }}>
+          chronological season grouped by month when expanded. While
+          collapsed there's nothing to scroll yet, so the preview area is
+          also part of the swipe-up drag zone — not just the handle strip. */}
+      <div
+        {...(!expanded ? dragHandlers : {})}
+        className={`overflow-y-auto px-4 pb-28 ${!expanded ? "touch-none" : ""}`}
+        style={{ height: "calc(100% - 84px)" }}
+      >
         {loading ? (
           <p className="text-center text-sm text-ink/40 mt-6">Loading playdates…</p>
         ) : playdates.length === 0 ? (

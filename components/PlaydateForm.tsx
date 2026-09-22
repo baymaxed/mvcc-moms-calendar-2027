@@ -85,8 +85,6 @@ export function PlaydateForm({ existing, onSaved, onCancel }: Props) {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            min="2027-01-01"
-            max="2027-05-31"
             className={inputClass}
           />
         </Field>
@@ -94,6 +92,7 @@ export function PlaydateForm({ existing, onSaved, onCancel }: Props) {
           <input
             required
             type="time"
+            step="900"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             className={inputClass}
@@ -102,6 +101,7 @@ export function PlaydateForm({ existing, onSaved, onCancel }: Props) {
         <Field label="End" className="col-span-1">
           <input
             type="time"
+            step="900"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
             className={inputClass}

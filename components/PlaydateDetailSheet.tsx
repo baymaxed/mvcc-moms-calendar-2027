@@ -87,7 +87,7 @@ export function PlaydateDetailSheet({
                   rel="noopener noreferrer"
                   className="text-teal font-semibold underline underline-offset-2"
                 >
-                  {playdate.address} — open in Maps
+                  {playdate.address}
                 </a>
               )}
             </div>
