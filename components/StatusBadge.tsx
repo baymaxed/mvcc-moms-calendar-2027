@@ -52,3 +52,13 @@ export function StatusBadge({
 export function statusDotColor(status: PlaydateStatus): string {
   return { active: "bg-confirmed", moved: "bg-moved", cancelled: "bg-cancelled" }[status];
 }
+
+// When a single date cell needs one representative color for several
+// playdates, precedence is: something's still on (active) beats something
+// that moved (moved) beats something that fell through (cancelled) — the
+// glance-test is "is anything actually happening here."
+export function dominantStatus(statuses: PlaydateStatus[]): PlaydateStatus {
+  if (statuses.includes("active")) return "active";
+  if (statuses.includes("moved")) return "moved";
+  return "cancelled";
+}
