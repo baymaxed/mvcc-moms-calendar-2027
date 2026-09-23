@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
       start_time: fields.start_time,
       end_time: fields.end_time ?? null,
       host_name: fields.host_name,
+      host_phone: fields.host_phone ?? null,
       location_name: fields.location_name ?? null,
       address: fields.address ?? null,
       info: fields.info ?? null,

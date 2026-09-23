@@ -15,6 +15,7 @@ create table if not exists playdates (
   end_time time,
 
   host_name text not null,
+  host_phone text,
   location_name text,
   address text,
   info text,

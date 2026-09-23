@@ -14,6 +14,7 @@ export interface Playdate {
   start_time: string; // "HH:MM:SS"
   end_time: string | null;
   host_name: string;
+  host_phone: string | null;
   location_name: string | null;
   address: string | null;
   info: string | null;
@@ -37,6 +38,7 @@ export interface PlaydateInput {
   start_time: string;
   end_time?: string | null;
   host_name: string;
+  host_phone?: string | null;
   location_name?: string | null;
   address?: string | null;
   info?: string | null;

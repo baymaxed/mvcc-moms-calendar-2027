@@ -11,12 +11,13 @@ interface Props {
 }
 
 export function PlaydateForm({ existing, onSaved, onCancel }: Props) {
-  const { code, actorName, setActorName } = useAdminAuth();
+  const { code, actorName, setActorName, actorPhone, setActorPhone } = useAdminAuth();
   const [title, setTitle] = useState(existing?.title ?? "");
   const [date, setDate] = useState(existing?.date ?? "");
   const [startTime, setStartTime] = useState(existing?.start_time?.slice(0, 5) ?? "");
   const [endTime, setEndTime] = useState(existing?.end_time?.slice(0, 5) ?? "");
   const [hostName, setHostName] = useState(existing?.host_name ?? actorName);
+  const [hostPhone, setHostPhone] = useState(existing?.host_phone ?? actorPhone);
   const [locationName, setLocationName] = useState(existing?.location_name ?? "");
   const [address, setAddress] = useState(existing?.address ?? "");
   const [info, setInfo] = useState(existing?.info ?? "");
@@ -34,6 +35,7 @@ export function PlaydateForm({ existing, onSaved, onCancel }: Props) {
       start_time: startTime ? `${startTime}:00` : "",
       end_time: endTime ? `${endTime}:00` : null,
       host_name: hostName,
+      host_phone: hostPhone || null,
       location_name: locationName || null,
       address: address || null,
       info: info || null,
@@ -57,7 +59,10 @@ export function PlaydateForm({ existing, onSaved, onCancel }: Props) {
         setError(data.error ?? "Something went wrong.");
         return;
       }
-      if (!existing) setActorName(hostName);
+      if (!existing) {
+        setActorName(hostName);
+        setActorPhone(hostPhone);
+      }
       onSaved(data.playdate, data.action ?? "created");
     } catch {
       setError("Could not reach the server. Try again.");
@@ -109,15 +114,27 @@ export function PlaydateForm({ existing, onSaved, onCancel }: Props) {
         </Field>
       </div>
 
-      <Field label="Host name">
-        <input
-          required
-          value={hostName}
-          onChange={(e) => setHostName(e.target.value)}
-          className={inputClass}
-          placeholder="Your name"
-        />
-      </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Host name">
+          <input
+            required
+            value={hostName}
+            onChange={(e) => setHostName(e.target.value)}
+            className={inputClass}
+            placeholder="Your name"
+          />
+        </Field>
+
+        <Field label="Host phone">
+          <input
+            type="tel"
+            value={hostPhone}
+            onChange={(e) => setHostPhone(e.target.value)}
+            className={inputClass}
+            placeholder="(301) 555-0123"
+          />
+        </Field>
+      </div>
 
       <Field label="Location name">
         <input

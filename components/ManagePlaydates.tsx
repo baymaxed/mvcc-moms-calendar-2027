@@ -118,6 +118,7 @@ export function ManagePlaydates() {
                   <p className="text-xs font-medium text-ink/50">
                     {formatDateShort(p.date)} · {formatDuration(p.start_time, p.end_time)} · hosted by{" "}
                     {p.host_name}
+                    {p.host_phone ? ` (${p.host_phone})` : ""}
                   </p>
                 </div>
                 <StatusBadge status={p.status} weatherStatus={p.weather_status} />

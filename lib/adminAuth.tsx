@@ -4,34 +4,44 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const CODE_KEY = "mvcc_dgl_code";
 const NAME_KEY = "mvcc_dgl_name";
+const PHONE_KEY = "mvcc_dgl_phone";
 
 interface AdminAuthState {
   code: string | null;
   actorName: string;
   setActorName: (name: string) => void;
+  actorPhone: string;
+  setActorPhone: (phone: string) => void;
   logout: () => void;
 }
 
 const AdminAuthContext = createContext<AdminAuthState | null>(null);
 
 // Remembers a device that has already entered the shared DGL code, purely
-// as a convenience (skip re-typing it, prefill the host name). This is NOT
-// authentication - every write API route re-validates the code server-side
-// regardless of what's in localStorage.
+// as a convenience (skip re-typing it, prefill the host name and phone).
+// This is NOT authentication - every write API route re-validates the code
+// server-side regardless of what's in localStorage.
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [code, setCode] = useState<string | null>(null);
   const [actorName, setActorNameState] = useState("");
+  const [actorPhone, setActorPhoneState] = useState("");
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setCode(localStorage.getItem(CODE_KEY));
     setActorNameState(localStorage.getItem(NAME_KEY) ?? "");
+    setActorPhoneState(localStorage.getItem(PHONE_KEY) ?? "");
     setHydrated(true);
   }, []);
 
   function setActorName(name: string) {
     setActorNameState(name);
     localStorage.setItem(NAME_KEY, name);
+  }
+
+  function setActorPhone(phone: string) {
+    setActorPhoneState(phone);
+    localStorage.setItem(PHONE_KEY, phone);
   }
 
   function rememberCode(value: string) {
@@ -51,7 +61,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AdminAuthContext.Provider value={{ code, actorName, setActorName, logout }}>
+    <AdminAuthContext.Provider value={{ code, actorName, setActorName, actorPhone, setActorPhone, logout }}>
       {children}
     </AdminAuthContext.Provider>
   );

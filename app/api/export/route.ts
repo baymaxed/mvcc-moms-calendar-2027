@@ -9,6 +9,7 @@ const COLUMNS = [
   "start_time",
   "end_time",
   "host_name",
+  "host_phone",
   "location_name",
   "address",
   "info",

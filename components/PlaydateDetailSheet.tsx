@@ -72,7 +72,17 @@ export function PlaydateDetailSheet({
             <p className="font-bold text-ink text-base">
               {formatDuration(playdate.start_time, playdate.end_time)}
             </p>
-            <p className="text-ink/60 font-medium">Hosted by {playdate.host_name}</p>
+            <p className="text-ink/60 font-medium">
+              Hosted by {playdate.host_name}
+              {playdate.host_phone && (
+                <>
+                  {" · "}
+                  <a href={`tel:${playdate.host_phone.replace(/[^\d+]/g, "")}`} className="text-teal font-semibold underline underline-offset-2">
+                    {playdate.host_phone}
+                  </a>
+                </>
+              )}
+            </p>
           </div>
 
           {(playdate.location_name || playdate.address) && (
